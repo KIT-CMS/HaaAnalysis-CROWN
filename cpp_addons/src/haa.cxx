@@ -18,8 +18,37 @@
 #include <iostream>
 #include <algorithm>
 
+/// Namespace for Higgs to pseudoscalar pair analysis functions
+
 namespace haa {
 
+/**
+ * @brief Extract truth-level daughter particle four-momenta and Higgs boson four-momentum from generator information
+ * 
+ * This function identifies the four daughter particles from Higgs decay (via intermediate pseudoscalars)
+ * by searching for particles with PDG ID 9000006 mothers. It sorts them by charge and pT, then constructs
+ * their four-momentum vectors along with the Higgs boson four-momentum.
+ * 
+ * @param df Input RDataFrame node
+ * @param str_ngenpart Column name for number of generator particles
+ * @param str_genpart_pdgid Column name for generator particle PDG IDs
+ * @param str_genpart_genpartidxmother Column name for generator particle mother indices
+ * @param str_genpart_pt Column name for generator particle transverse momentum
+ * @param str_genpart_eta Column name for generator particle pseudorapidity
+ * @param str_genpart_phi Column name for generator particle azimuthal angle
+ * @param str_genpart_mass Column name for generator particle mass
+ * @param str_truedaughteridxs Output column name for truth daughter indices vector
+ * @param str_truth_d1_p4 Output column name for first daughter four-momentum
+ * @param str_truth_d2_p4 Output column name for second daughter four-momentum
+ * @param str_truth_d3_p4 Output column name for third daughter four-momentum
+ * @param str_truth_d4_p4 Output column name for fourth daughter four-momentum
+ * @param str_truth_h_p4 Output column name for Higgs boson four-momentum
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with truth-level four-momentum columns
+ * 
+ * @note Daughters are sorted by pT within their charge group (positive/negative)
+ * @note The function expects exactly 4 daughters (2 positive, 2 negative charge)
+ */
 ROOT::RDF::RNode GetTrueDaughterP4s(ROOT::RDF::RNode df, const std::string &str_ngenpart, const std::string &str_genpart_pdgid, 
 				    const std::string &str_genpart_genpartidxmother, const std::string &str_genpart_pt,
 				    const std::string &str_genpart_eta, const std::string &str_genpart_phi,  
@@ -102,6 +131,25 @@ ROOT::RDF::RNode GetTrueDaughterP4s(ROOT::RDF::RNode df, const std::string &str_
   
 }
 
+/**
+ * @brief Identify truth-level pseudoscalar daughter pairs based on common mother particles
+ * 
+ * This function groups the truth daughters into two pairs by identifying which daughters
+ * share the same mother particle and have opposite charge (different PDG IDs). This is
+ * used to match the decay topology of H → aa → 4 charged particles.
+ * 
+ * @param df Input RDataFrame node
+ * @param str_truth_daughters Column name for truth daughter indices
+ * @param str_genpart_pdgid Column name for generator particle PDG IDs
+ * @param str_genpart_motheridx Column name for generator particle mother indices
+ * @param str_truth_ps1 Output column name for first pseudoscalar daughter pair indices
+ * @param str_truth_ps2 Output column name for second pseudoscalar daughter pair indices
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with truth-level daughter pair columns
+ * 
+ * @note Returns {-1, -1} if no valid pairing is found
+ * @note Assumes daughters come in opposite-charge pairs from the same mother
+ */
 ROOT::RDF::RNode GetTruthDaughterPairs(ROOT::RDF::RNode df, const std::string &str_truth_daughters, const std::string &str_genpart_pdgid, const std::string &str_genpart_motheridx, 
                const std::string &str_truth_ps1, const std::string &str_truth_ps2) {
   auto truth_ps1 = [](const ROOT::RVec<int> truth_daughters, const ROOT::RVec<int> genpart_pdgid, const ROOT::RVec<int> genpart_motheridx) {
@@ -135,6 +183,28 @@ ROOT::RDF::RNode GetTruthDaughterPairs(ROOT::RDF::RNode df, const std::string &s
   return df2;
 }
 
+/**
+ * @brief Select four PF candidates that form two opposite-charge pairs within ΔR < 0.1
+ * 
+ * This algorithm selects a Higgs candidate by finding combinations of four PF candidates
+ * that contain at least two opposite-charge pairs with ΔR < 0.1. This selection criteria
+ * is designed to identify collimated decay products from boosted pseudoscalars.
+ * 
+ * @param df Input RDataFrame node
+ * @param str_pfcand_pt Column name for PF candidate transverse momentum
+ * @param str_pfcand_eta Column name for PF candidate pseudorapidity
+ * @param str_pfcand_phi Column name for PF candidate azimuthal angle
+ * @param str_pfcand_mass Column name for PF candidate mass
+ * @param str_pfcand_charge Column name for PF candidate charge
+ * @param str_pfcand_mask Column name for PF candidate selection mask
+ * @param str_daughteridxs Output column name for selected daughter indices
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with selected daughter indices column
+ * 
+ * @note Returns {-1, -1, -1, -1} if fewer than 4 candidates are available
+ * @note Requires at least 2 opposite-charge pairs within ΔR < 0.1
+ * @note Selected hadrons are sorted by pT
+ */
 ROOT::RDF::RNode ClosestToHiggsMassAlgo(ROOT::RDF::RNode df, const std::string &str_pfcand_pt, const std::string &str_pfcand_eta, const std::string &str_pfcand_phi, 
 					const std::string &str_pfcand_mass, const std::string &str_pfcand_charge, const std::string &str_pfcand_mask, const std::string &str_daughteridxs) {
   Logger::get("HiggsSelection")->debug("Setting up algorithm");
@@ -219,6 +289,22 @@ ROOT::RDF::RNode ClosestToHiggsMassAlgo(ROOT::RDF::RNode df, const std::string &
 
 }
 
+/**
+ * @brief Select the four highest-pT PF candidates as Higgs daughters
+ * 
+ * This is the simplest selection algorithm that picks the four PF candidates with the
+ * highest transverse momentum from the masked collection. No charge or topology
+ * requirements are applied.
+ * 
+ * @param df Input RDataFrame node
+ * @param str_pfcand_pt Column name for PF candidate transverse momentum
+ * @param str_pfcand_mask Column name for PF candidate selection mask
+ * @param str_daughteridxs Output column name for selected daughter indices
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with selected daughter indices column
+ * 
+ * @note Candidates are sorted by pT in descending order
+ */
 ROOT::RDF::RNode FourHardestPFCandsAlgo(ROOT::RDF::RNode df, const std::string &str_pfcand_pt, const std::string &str_pfcand_mask, const std::string &str_daughteridxs) {
   auto hidx = [](const ROOT::RVec<float> pfcand_pt, const ROOT::RVec<int> pfcand_mask) {
 
@@ -240,6 +326,27 @@ ROOT::RDF::RNode FourHardestPFCandsAlgo(ROOT::RDF::RNode df, const std::string &
   return df1;
 }
 
+/**
+ * @brief Select four PF candidates as two highest-pT positive and two highest-pT negative candidates
+ * 
+ * This algorithm selects Higgs daughters by explicitly requiring charge balance:
+ * the two hardest positive-charge candidates and the two hardest negative-charge candidates.
+ * This ensures a 2+/2- charge configuration.
+ * 
+ * @param df Input RDataFrame node
+ * @param str_pfcand_pt Column name for PF candidate transverse momentum
+ * @param str_pfcand_eta Column name for PF candidate pseudorapidity
+ * @param str_pfcand_phi Column name for PF candidate azimuthal angle
+ * @param str_pfcand_mass Column name for PF candidate mass
+ * @param str_pfcand_charge Column name for PF candidate charge
+ * @param str_pfcand_mask Column name for PF candidate selection mask
+ * @param str_daughteridxs Output column name for selected daughter indices
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with selected daughter indices column
+ * 
+ * @note Returns {-1, -1, -1, -1} if fewer than 4 candidates or insufficient charge balance
+ * @note Selected indices are ordered as: pos[0], neg[0], pos[1], neg[1]
+ */
 ROOT::RDF::RNode ChargePairsAlgo(ROOT::RDF::RNode df, const std::string &str_pfcand_pt, const std::string &str_pfcand_eta, const std::string &str_pfcand_phi, const std::string &str_pfcand_mass, const std::string &str_pfcand_charge, 
 				 const std::string &str_pfcand_mask, const std::string &str_daughteridxs) {
 /*
@@ -303,7 +410,21 @@ ROOT::RDF::RNode ChargePairsAlgo(ROOT::RDF::RNode df, const std::string &str_pfc
   return df1;
   }
 
-
+/**
+ * @brief Compute the Higgs boson four-momentum by summing four daughter four-momenta
+ * 
+ * This function calculates the invariant mass and kinematics of the Higgs candidate
+ * by adding the four-momentum vectors of its four daughter particles.
+ * 
+ * @param df Input RDataFrame node
+ * @param str_d1_p4 Column name for first daughter four-momentum
+ * @param str_d2_p4 Column name for second daughter four-momentum
+ * @param str_d3_p4 Column name for third daughter four-momentum
+ * @param str_d4_p4 Column name for fourth daughter four-momentum
+ * @param str_H_p4 Output column name for Higgs four-momentum
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with Higgs four-momentum column
+ */
 ROOT::RDF::RNode GetHiggsP4(ROOT::RDF::RNode df, const std::string &str_d1_p4, const std::string &str_d2_p4, 
 			    const std::string &str_d3_p4, const std::string &str_d4_p4, const std::string &str_H_p4) {
   auto H_p4 = [](const ROOT::Math::PtEtaPhiMVector d1_p4, const ROOT::Math::PtEtaPhiMVector d2_p4, const ROOT::Math::PtEtaPhiMVector d3_p4,                                                                
@@ -315,6 +436,29 @@ ROOT::RDF::RNode GetHiggsP4(ROOT::RDF::RNode df, const std::string &str_d1_p4, c
   return df1;
 }
 
+/**
+ * @brief Pair daughters into pseudoscalars based on highest combined pT
+ * 
+ * This function identifies two opposite-charge pairs from the four daughters. The pair
+ * with the highest combined pT is selected as the first pseudoscalar, and the remaining
+ * two daughters form the second pseudoscalar.
+ * 
+ * @param df Input RDataFrame node
+ * @param daughterIdx Column name for daughter indices
+ * @param str_pfcand_pt Column name for PF candidate transverse momentum
+ * @param str_pfcand_eta Column name for PF candidate pseudorapidity
+ * @param str_pfcand_phi Column name for PF candidate azimuthal angle
+ * @param str_pfcand_mass Column name for PF candidate mass
+ * @param str_pfcand_charge Column name for PF candidate charge
+ * @param str_pfcand_mask Column name for PF candidate selection mask
+ * @param str_highPtPair Output column name for high-pT pseudoscalar daughter pair indices
+ * @param str_lowPtPair Output column name for low-pT pseudoscalar daughter pair indices
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with pseudoscalar pair columns
+ * 
+ * @note Only considers opposite-charge pairs
+ * @note Returns {-1, -1} if no valid pairing is found
+ */
 ROOT::RDF::RNode GetPseudoScalars(ROOT::RDF::RNode df, const std::string &daughterIdx, const std::string &str_pfcand_pt, const std::string &str_pfcand_eta, const std::string &str_pfcand_phi, 
                                   const std::string &str_pfcand_mass, const std::string &str_pfcand_charge, const std::string &str_pfcand_mask, const std::string &str_highPtPair, 
                                   const std::string &str_lowPtPair) {
@@ -369,6 +513,30 @@ ROOT::RDF::RNode GetPseudoScalars(ROOT::RDF::RNode df, const std::string &daught
     
 }
 
+/**
+ * @brief Pair daughters into pseudoscalars by minimizing the invariant mass difference
+ * 
+ * This function tests all possible opposite-charge pairings of the four daughters and
+ * selects the pairing that minimizes the absolute difference between the two pair masses.
+ * This approach assumes the two pseudoscalars should have similar masses.
+ * 
+ * @param df Input RDataFrame node
+ * @param daughterIdx Column name for daughter indices
+ * @param str_pfcand_pt Column name for PF candidate transverse momentum
+ * @param str_pfcand_eta Column name for PF candidate pseudorapidity
+ * @param str_pfcand_phi Column name for PF candidate azimuthal angle
+ * @param str_pfcand_mass Column name for PF candidate mass
+ * @param str_pfcand_charge Column name for PF candidate charge
+ * @param str_pfcand_mask Column name for PF candidate selection mask
+ * @param str_ps1Pair Output column name for first pseudoscalar daughter pair indices
+ * @param str_ps2Pair Output column name for second pseudoscalar daughter pair indices
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with pseudoscalar pair columns
+ * 
+ * @note Uses permutations to test all possible pairings
+ * @note Only considers opposite-charge pairs
+ * @note Returns {-1, -1} if no valid pairing is found
+ */
 ROOT::RDF::RNode GetMinMassDiff(ROOT::RDF::RNode df, const std::string &daughterIdx, const std::string &str_pfcand_pt, const std::string &str_pfcand_eta, const std::string &str_pfcand_phi, 
                                const std::string &str_pfcand_mass, const std::string &str_pfcand_charge, const std::string &str_pfcand_mask, const std::string &str_ps1Pair, 
                                const std::string &str_ps2Pair) {
@@ -426,6 +594,33 @@ ROOT::RDF::RNode GetMinMassDiff(ROOT::RDF::RNode df, const std::string &daughter
 
 }
 
+/**
+ * @brief Calculate relative isolation for Higgs daughter candidates
+ * 
+ * This function computes PF-based relative isolation for each Higgs daughter using the
+ * standard formula with pileup correction (delta-beta method). Isolation includes charged
+ * hadrons from primary vertex, neutral hadrons, and photons within ΔR < 0.4, corrected
+ * for pileup using charged hadrons not from the primary vertex.
+ * 
+ * @param df Input RDataFrame node
+ * @param str_pf_cand_iso Output column name for relative isolation values
+ * @param str_pfcand_pt Column name for PF candidate transverse momentum
+ * @param str_pfcand_eta Column name for PF candidate pseudorapidity
+ * @param str_pfcand_phi Column name for PF candidate azimuthal angle
+ * @param str_pfcand_mass Column name for PF candidate mass
+ * @param str_higgsdaughters Column name for Higgs daughter indices
+ * @param str_pfcand_charged_hadron_mask Column name for charged hadron mask
+ * @param str_pfcand_neutral_hadron_mask Column name for neutral hadron mask
+ * @param str_pfcand_photon_mask Column name for photon mask
+ * @param str_pfcand_fromPV_mask Column name for primary vertex association mask
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with isolation column
+ * 
+ * @note Uses ΔR < 0.4 cone for isolation calculation
+ * @note Applies delta-beta pileup correction with factor 0.5
+ * @note Assumes kaon mass (0.493677 GeV) for daughter particles
+ * @note Excludes the daughter itself from its isolation sum
+ */
 ROOT::RDF::RNode pfCandIso(ROOT::RDF::RNode df, const std::string &str_pf_cand_iso, const std::string &str_pfcand_pt, const std::string &str_pfcand_eta, const std::string &str_pfcand_phi, 
                            const std::string &str_pfcand_mass, const std::string &str_higgsdaughters, const std::string &str_pfcand_charged_hadron_mask, 
                            const std::string &str_pfcand_neutral_hadron_mask, const std::string &str_pfcand_photon_mask, const std::string &str_pfcand_fromPV_mask) {
@@ -517,6 +712,22 @@ ROOT::RDF::RNode pfCandIso(ROOT::RDF::RNode df, const std::string &str_pf_cand_i
   return df1;
 }
 
+/**
+ * @brief Extract the transverse momentum of a specific generator particle
+ * 
+ * This function retrieves the pT of the first generator particle that passes
+ * the provided mask selection. Useful for extracting truth-level kinematic
+ * information for comparison with reconstruction.
+ * 
+ * @param df Input RDataFrame node
+ * @param str_genpart_mask Column name for generator particle selection mask
+ * @param str_genpart_pt Column name for generator particle transverse momentum
+ * @param str_gen_pt Output column name for the extracted pT value
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with generator pT column
+ * 
+ * @note Returns the pT of the first particle passing the mask
+ */
 ROOT::RDF::RNode getGenPt(ROOT::RDF::RNode df, const std::string &str_genpart_mask, const std::string &str_genpart_pt, const std::string &str_gen_pt){ 
   auto df1 = df.Define(
 		       str_gen_pt,
@@ -530,6 +741,21 @@ ROOT::RDF::RNode getGenPt(ROOT::RDF::RNode df, const std::string &str_genpart_ma
   return df1;
 }
 
+/**
+ * @brief Calculate the angular separation (ΔR) between two daughter particles
+ * 
+ * This function computes the geometric distance in η-φ space between two particles
+ * using their four-momentum vectors. This is useful for studying the collimation
+ * of decay products and identifying boosted topologies.
+ * 
+ * @param df Input RDataFrame node
+ * @param inputvectors Vector of column names for the two daughter four-momenta
+ * @param str_daughterDeltaR Output column name for the ΔR value
+ * 
+ * @return ROOT::RDF::RNode Updated RDataFrame with ΔR column
+ * 
+ * @note ΔR = sqrt(Δη² + Δφ²)
+ */
 ROOT::RDF::RNode getDaughterDeltaR(ROOT::RDF::RNode df, const std::vector<std::string> &inputvectors, const std::string &str_daughterDeltaR) {
   auto df1 = df.Define(str_daughterDeltaR, [](const ROOT::Math::PtEtaPhiMVector &d1_p4, const ROOT::Math::PtEtaPhiMVector &d2_p4) {
       return ROOT::Math::VectorUtil::DeltaR(d1_p4, d2_p4);
