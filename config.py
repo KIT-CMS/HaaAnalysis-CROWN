@@ -252,7 +252,7 @@ def build_config(
                     "2018": "2018_UL",
                 }
             ),
-            "muon_sf_varation": "nominal",  # "sf" is nominal, "systup"/"systdown" are up/down variations
+            "muon_sf_varation": "nominal",  # "nominal" is nominal, "systup"/"systdown" are up/down variations
         },
     )    
     
