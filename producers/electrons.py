@@ -80,21 +80,21 @@ GoodElectronPtCut = Producer(
 )
 GoodElectronEtaCut = Producer(
     name="GoodElectronEtaCut",
-    call="physicsobject::CutAbsMax<float>({df}, {output}, {input}, {min_electron_eta})",
+    call="physicsobject::CutAbsMax<float>({df}, {output}, {input}, {max_electron_eta})",
     input=[nanoAOD.Electron_eta],
     output=[],
     scopes=["ee","em"],
 )
 GoodElectronDxyCut = Producer(
     name="GoodElectronDxyCut",
-    call="physicsobject::CutAbsMax<float>({df}, {output}, {input}, {min_electron_dxy})",
+    call="physicsobject::CutAbsMax<float>({df}, {output}, {input}, {max_electron_dxy})",
     input=[nanoAOD.Electron_dxy],
     output=[],
     scopes=["ee","em"],
 )
 GoodElectronDzCut = Producer(
     name="GoodElectronDzCut",
-    call="physicsobject::CutAbsMax<float>({df}, {output}, {input}, {min_electron_dz})",
+    call="physicsobject::CutAbsMax<float>({df}, {output}, {input}, {max_electron_dz})",
     input=[nanoAOD.Electron_dz],
     output=[],
     scopes=["ee","em"],

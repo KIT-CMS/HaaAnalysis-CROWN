@@ -277,7 +277,7 @@ def build_config(
                     "2018": "2018",
                 }
             ),
-            "ele_sf_varation": "nominal",  # "sf" is nominal, "sfup"/"sfdown" are up/down variations
+            "ele_sf_varation": "sf",  # "sf" is nominal, "sfup"/"sfdown" are up/down variations
             "nom_ele_trigger_sf_file": EraModifier(
                 {
                     "2016preVFP": "data/custom_top_sf/electron/2016preVFP_UL/trigger_2016preVFP.json.gz",
@@ -390,7 +390,7 @@ def build_config(
             pairselection.LVEl1,
             pairselection.LVEl2,
             pairquantities.EEDiTauPairQuantities,
-            genparticles.EEGenDiTauPairQuantities,
+            #genparticles.EEGenDiTauPairQuantities,
             scalefactors.ElectronIDTrigger_SF
         ],
     )
@@ -407,7 +407,7 @@ def build_config(
             pairselection.LVEl1,
             pairselection.LVMu2,
             pairquantities.EMDiTauPairQuantities,
-            genparticles.EMGenDiTauPairQuantities,
+            #genparticles.EMGenDiTauPairQuantities,
             scalefactors.ElectronIDTrigger_SF,
             scalefactors.MuonIDIsoTrigger_SF
         ],
@@ -629,19 +629,19 @@ def build_config(
             q.pt_vis,
             q.eta_vis,
             q.phi_vis,
-            q.gen_pt_1,
-            q.gen_eta_1,
-            q.gen_phi_1,
-            q.gen_mass_1,
+            #q.gen_pt_1,
+            #q.gen_eta_1,
+            #q.gen_phi_1,
+            #q.gen_mass_1,
             #q.gen_pdgid_1,
-            q.gen_pt_2,
-            q.gen_eta_2,
-            q.gen_phi_2,
-            q.gen_mass_2,
+            #q.gen_pt_2,
+            #q.gen_eta_2,
+            #q.gen_phi_2,
+            #q.gen_mass_2,
             #q.gen_pdgid_2,
-            q.gen_m_vis,
-            q.gen_pt_vis,
-            q.gen_eta_vis,
+            #q.gen_m_vis,
+            #q.gen_pt_vis,
+            #q.gen_eta_vis,
             q.id_wgt_ele_1,
             q.id_wgt_mu_2,
             q.iso_wgt_mu_2,

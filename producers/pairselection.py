@@ -146,7 +146,7 @@ GoodEEPairFlag = Producer(
 
 GoodEEPairFilter = Filter(
     name="GoodEEPairFilter",
-    call='basefunctions::FilterFlagsAny({df}, "GoodElElPairs", {input})',
+    call='event::filter::Flags({df}, "GoodElElPairs", {input}, "any_of")',
     input=[],
     scopes=["ee"],
     subproducers=[GoodEEPairFlag],
@@ -240,7 +240,7 @@ GoodEMPairFlag = Producer(
 
 GoodEMPairFilter = Filter(
     name="GoodEMPairFilter",
-    call='basefunctions::FilterFlagsAny({df}, "GoodEMuPairs", {input})',
+    call='event::filter::Flags({df}, "GoodElMuPairs", {input}, "any_of")',
     input=[],
     scopes=["em"],
     subproducers=[GoodEMPairFlag],
