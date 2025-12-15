@@ -7,21 +7,21 @@ from code_generation.producer import Producer, ProducerGroup
 ####################
 MMGenPair = Producer(
     name="MMGenPair",
-    call="ditau_pairselection::buildgenpair({df}, {output}, {input})",
+    call="ditau_pairselection::buildgenpair({df}, {input}, {output})",
     input=[q.dileptonpair, nanoAOD.Muon_indexToGen, nanoAOD.Muon_indexToGen],
     output=[q.gen_dileptonpair],
     scopes=["mm"],
 )
 EEGenPair = Producer(
     name="EEGenPair",
-    call="ditau_pairselection::buildgenpair({df}, {output}, {input})",
+    call="ditau_pairselection::buildgenpair({df}, {input}, {output})",
     input=[q.dileptonpair, nanoAOD.Electron_indexToGen, nanoAOD.Electron_indexToGen],
     output=[q.gen_dileptonpair],
     scopes=["ee"],
 )
 EMGenPair = Producer(
     name="EMGenPair",
-    call="ditau_pairselection::buildgenpair({df}, {output}, {input})",
+    call="ditau_pairselection::buildgenpair({df}, {input}, {output})",
     input=[q.dileptonpair, nanoAOD.Electron_indexToGen, nanoAOD.Muon_indexToGen],
     output=[q.gen_dileptonpair],
     scopes=["em"],
