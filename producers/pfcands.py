@@ -120,9 +120,9 @@ BasePFCands = ProducerGroup(
     scopes=["global"],
     subproducers=[
         ChargedPFCandsPdgId,
-        #VetoOverlappingPFCandsLooseElectrons,
-        #VetoOverlappingPFCandsLooseMuons,
-        #VetoOverlappingPFCandsLoosePhotons,
+        VetoOverlappingPFCandsLooseElectrons,
+        VetoOverlappingPFCandsLooseMuons,
+        VetoOverlappingPFCandsLoosePhotons,
         PFCandsPtCut,
         PFCandsEtaCut,
         PFCandsMinMassCut,
