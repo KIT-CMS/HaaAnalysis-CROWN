@@ -93,21 +93,21 @@ PFCandsFromPVSelection = Producer(
 
 VetoOverlappingPFCandsLooseElectrons = Producer(
     name="VetoOverlappingPFCandsLooseElectrons",
-    call="jet::VetoOverlappingJetsLooseLeptons({df}, {output}, {input}, {deltaR_jet_veto})",
+    call="physicsobject::jet::VetoOverlappingJetsLooseLeptons({df}, {output}, {input}, {deltaR_jet_veto})",
     input=[nanoAOD.PFCands_eta, nanoAOD.PFCands_phi, q.base_electrons_mask, nanoAOD.Electron_eta, nanoAOD.Electron_phi],
     output=[q.pfcand_electron_overlap_veto_mask],
     scopes=["global"],
 )
 VetoOverlappingPFCandsLooseMuons = Producer(
     name="VetoOverlappingPFCandsLooseMuons",
-    call="jet::VetoOverlappingJetsLooseLeptons({df}, {output}, {input}, {deltaR_jet_veto})",
+    call="physicsobject::jet::VetoOverlappingJetsLooseLeptons({df}, {output}, {input}, {deltaR_jet_veto})",
     input=[nanoAOD.PFCands_eta, nanoAOD.PFCands_phi, q.base_muons_mask, nanoAOD.Muon_eta, nanoAOD.Muon_phi],
     output=[q.pfcand_muon_overlap_veto_mask],
     scopes=["global"],
 )
 VetoOverlappingPFCandsLoosePhotons = Producer(
     name="VetoOverlappingPFCandsLoosePhotons",
-    call="jet::VetoOverlappingJetsLooseLeptons({df}, {output}, {input}, {deltaR_jet_veto})",
+    call="physicsobject::jet::VetoOverlappingJetsLooseLeptons({df}, {output}, {input}, {deltaR_jet_veto})",
     input=[nanoAOD.PFCands_eta, nanoAOD.PFCands_phi, q.base_photons_mask, nanoAOD.Photon_eta, nanoAOD.Photon_phi],
     output=[q.pfcand_photon_overlap_veto_mask],
     scopes=["global"],

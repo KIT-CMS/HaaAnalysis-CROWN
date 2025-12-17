@@ -2,9 +2,10 @@
 #define GUARDCUSTOMJETS_H
 
 #include "../include/custom_jets.hxx"
-#include "../../../../include/basefunctions.hxx"
 #include "../../../../include/defaults.hxx"
+#include "../../../../include/utility/CorrectionManager.hxx"
 #include "../../../../include/utility/Logger.hxx"
+#include "../../../../include/utility/utility.hxx"
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
 #include "TRandom3.h"
@@ -16,7 +17,7 @@
 #include <typeinfo>
 
 /// Namespace for custom jet operations
-
+namespace physicsobject {
 namespace jet {
 
 /**
@@ -91,4 +92,5 @@ VetoOverlappingJetsLooseLeptons(ROOT::RDF::RNode df, const std::string &output_c
 }
 
 }
-#endif /* GUARDCUSTOMJETS_H */
+}
+#endif

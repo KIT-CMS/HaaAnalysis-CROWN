@@ -4,6 +4,7 @@
 #include "ROOT/RDataFrame.hxx"
 #include <string>
 
+namespace physicsobject {
 namespace jet {
 
 /**
@@ -40,5 +41,5 @@ ROOT::RDF::RNode VetoOverlappingJetsLooseLeptons(
 );
 
 } // namespace jet
-
+} // namespace physicsobject
 #endif /* GUARDCUSTOMJETS_HXX */
