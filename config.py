@@ -12,8 +12,9 @@ from .producers import pairselection as pairselection
 from .producers import higgs as higgs
 from .producers import higgsdaughters as higgsdaughters
 from .producers import pfcands as pfcands
-from .producers import scalefactors as scalefactors
 from .producers import fromnano as fromnano
+from .producers import scalefactors as scalefactors
+#from .producers import fromnano as fromnano
 from .quantities import nanoAOD as nanoAOD
 from .quantities import output as q
 from code_generation.configuration import Configuration
@@ -150,7 +151,7 @@ def build_config(
             "charged_pfcands_pdgid": "211,-211",
             "neutral_pfcands_pdgid": "130",
             "photon_pfcands_pdgid": "22",
-            "fromPV": "3",
+            "fromPV": "2,3",
 
             #"kaon_mass": 0.493677,
 
@@ -315,6 +316,7 @@ def build_config(
             event.PUweights,
             event.Lumi,
             event.MetFilter,
+            #fromnano.copy,
             muons.BaseMuons,
             electrons.BaseElectrons,
             photons.BasePhotons,
@@ -495,6 +497,11 @@ def build_config(
 	    q.d4_eta,
 	    q.d4_phi,
         q.d4_iso,
+        #q.nano_pfcands_pt,
+        #q.nano_pfcands_eta,
+        #q.nano_pfcands_phi,
+        #q.nano_pfcands_pdgId,
+        #q.nano_pfcands_fromPV,
 	    #q.truth_d1_pt,
 	    #q.truth_d1_eta,
 	    #q.truth_d1_phi,
