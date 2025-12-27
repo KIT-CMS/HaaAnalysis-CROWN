@@ -168,7 +168,7 @@ LVEl1 = Producer(
 )
 LVEl2 = Producer(
     name="LVEl2",
-    call="lorentzvector::Build({df}, {output}, {input}, 0)",
+    call="lorentzvector::Build({df}, {output}, {input}, 1)",
     input=[
         nanoAOD.Electron_pt,
         nanoAOD.Electron_eta,
