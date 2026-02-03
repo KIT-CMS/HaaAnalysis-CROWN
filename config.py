@@ -605,12 +605,12 @@ def build_config(
             q.gen_pt_vis,
             q.id_wgt_ele_1,
             q.id_wgt_ele_2,
-            #q.trigger_wgt_ele_1,
-            #q.trigger_wgt_ele_1_up,
-            #q.trigger_wgt_ele_1_down,
-            #q.trigger_wgt_ele_2,
-            #q.trigger_wgt_ele_2_up,
-            #q.trigger_wgt_ele_2_down
+            q.trigger_wgt_ele_1,
+            q.trigger_wgt_ele_1_up,
+            q.trigger_wgt_ele_1_down,
+            q.trigger_wgt_ele_2,
+            q.trigger_wgt_ele_2_up,
+            q.trigger_wgt_ele_2_down
             ],
     )
     configuration.add_outputs(
@@ -652,9 +652,9 @@ def build_config(
             q.id_wgt_ele_1,
             q.id_wgt_mu_2,
             q.iso_wgt_mu_2,
-            #q.trigger_wgt_ele_1,
-            #q.trigger_wgt_ele_1_up,
-            #q.trigger_wgt_ele_1_down,
+            q.trigger_wgt_ele_1,
+            q.trigger_wgt_ele_1_up,
+            q.trigger_wgt_ele_1_down,
             q.trigger_wgt_mu_2
             ],
     )

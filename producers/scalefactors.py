@@ -110,21 +110,21 @@ Ele_2_ID_SF = Producer(
     scopes=["ee"],
 )
 
-#Ele_1_Trigger_SF = Producer(
-#    name="Ele_1_Trigger_SF",
-#    call='scalefactor::electron::trigger({df}, {output}, {input}, "{nom_ele_trigger_sf_file}", "{nom_ele_trigger_sf_name}", "{syst_ele_trigger_sf_file}", "{syst_ele_trigger_sf_name}")',
-#    input=[q.pt_1, q.eta_1],
-#    output=[q.trigger_wgt_ele_1, q.trigger_wgt_ele_1_up, q.trigger_wgt_ele_1_down],
-#    scopes=["ee","em"],
-#)
-#
-#Ele_2_Trigger_SF = Producer(
-#    name="Ele_2_Trigger_SF",
-#    call='scalefactor::electron::trigger({df}, {output}, {input}, "{nom_ele_trigger_sf_file}", "{nom_ele_trigger_sf_name}", "{syst_ele_trigger_sf_file}", "{syst_ele_trigger_sf_name}")',
-#    input=[q.pt_2, q.eta_2],
-#    output=[q.trigger_wgt_ele_2, q.trigger_wgt_ele_2_up, q.trigger_wgt_ele_2_down],
-#    scopes=["ee","em"], 
-#)
+Ele_1_Trigger_SF = Producer(
+    name="Ele_1_Trigger_SF",
+    call='scalefactor::electron::trigger({df}, {output}, {input}, "{nom_ele_trigger_sf_file}", "{nom_ele_trigger_sf_name}", "{syst_ele_trigger_sf_file}", "{syst_ele_trigger_sf_name}")',
+    input=[q.pt_1, q.eta_1],
+    output=[q.trigger_wgt_ele_1, q.trigger_wgt_ele_1_up, q.trigger_wgt_ele_1_down],
+    scopes=["ee","em"],
+)
+
+Ele_2_Trigger_SF = Producer(
+    name="Ele_2_Trigger_SF",
+    call='scalefactor::electron::trigger({df}, {output}, {input}, "{nom_ele_trigger_sf_file}", "{nom_ele_trigger_sf_name}", "{syst_ele_trigger_sf_file}", "{syst_ele_trigger_sf_name}")',
+    input=[q.pt_2, q.eta_2],
+    output=[q.trigger_wgt_ele_2, q.trigger_wgt_ele_2_up, q.trigger_wgt_ele_2_down],
+    scopes=["ee"], 
+)
 
 MuonIDIsoTrigger_SF = ProducerGroup(
     name="MuonIDIso_SF",
@@ -159,12 +159,12 @@ ElectronIDTrigger_SF = ProducerGroup(
         "ee": [
             Ele_1_ID_SF,
             Ele_2_ID_SF,
-            #Ele_1_Trigger_SF,
-            #Ele_2_Trigger_SF
+            Ele_1_Trigger_SF,
+            Ele_2_Trigger_SF
         ],
         "em": [
             Ele_1_ID_SF,
-            #Ele_1_Trigger_SF,
+            Ele_1_Trigger_SF,
         ]
     }
 )
