@@ -98,14 +98,14 @@ Muon_2_Iso_SF = Producer(
 Ele_1_ID_SF = Producer(
     name="Ele_1_ID_SF",
     call='physicsobject::electron::scalefactor::Id({df}, correctionManager, {output}, {input}, "{ele_sf_year_id}", "Medium", "{ele_sf_file}", "{ele_id_sf_name}", "{ele_sf_varation}")',
-    input=[q.pt_1, q.eta_1],
+    input=[q.pt_1, q.eta_1, q.phi_1],
     output=[q.id_wgt_ele_1],
     scopes=["em", "ee"],
 )
 Ele_2_ID_SF = Producer(
     name="Ele_2_ID_SF",
     call='physicsobject::electron::scalefactor::Id({df}, correctionManager, {output}, {input}, "{ele_sf_year_id}", "Medium", "{ele_sf_file}", "{ele_id_sf_name}", "{ele_sf_varation}")',
-    input=[q.pt_2, q.eta_2],
+    input=[q.pt_2, q.eta_2, q.phi_2],
     output=[q.id_wgt_ele_2],
     scopes=["ee"],
 )
