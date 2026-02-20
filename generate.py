@@ -18,7 +18,7 @@ def run(args):
         "rem_hbb",
         "rem_Hnonbb",
     ]
-    available_eras = ["2016preVFP","2016postVFP","2017","2018"]
+    available_eras = ["2016preVFP","2016postVFP","2017","2018","2024"]
     available_scopes = ["mm","ee","em"]
 
     ## setup variables

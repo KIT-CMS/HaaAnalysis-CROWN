@@ -51,6 +51,7 @@ def build_config(
                     "2016postVFP": "data/jsonpog-integration/POG/LUM/2016postVFP_UL/puWeights.json.gz",
                     "2017": "data/jsonpog-integration/POG/LUM/2017_UL/puWeights.json.gz",
                     "2018": "data/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz",
+                    "2024": "data/jsonpog-integration/POG/LUM/2024_Summer24/puWeights_BCDEFGHI.json.gz",
                 }
             ),
             "PU_reweighting_era": EraModifier(
@@ -59,6 +60,7 @@ def build_config(
                     "2016postVFP": "Collisions16_UltraLegacy_goldenJSON",
                     "2017": "Collisions17_UltraLegacy_goldenJSON",
                     "2018": "Collisions18_UltraLegacy_goldenJSON",
+                    "2024": "Collisions24_BCDEFGHI_goldenJSON",
                 }
             ),
             "PU_reweighting_variation": "nominal",
@@ -69,6 +71,7 @@ def build_config(
                     "2016postVFP": "data/golden_json/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
                     "2017": "data/golden_json/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
                     "2018": "data/golden_json/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
+                    "2024": "data/golden_json/Cert_Collisions24_378981_386951_Golden.json",
                 }
             ),
             "met_filters": EraModifier(
@@ -105,6 +108,17 @@ def build_config(
                         "Flag_ecalBadCalibFilter",
                     ],
                     "2018": [
+                        "Flag_goodVertices",
+                        "Flag_globalSuperTightHalo2016Filter",
+                        "Flag_HBHENoiseFilter",
+                        "Flag_HBHENoiseIsoFilter",
+                        "Flag_EcalDeadCellTriggerPrimitiveFilter",
+                        "Flag_BadPFMuonFilter",
+                        "Flag_BadPFMuonDzFilter", # only since nanoAODv9 available
+                        "Flag_eeBadScFilter",
+                        "Flag_ecalBadCalibFilter",
+                    ],
+                    "2024": [
                         "Flag_goodVertices",
                         "Flag_globalSuperTightHalo2016Filter",
                         "Flag_HBHENoiseFilter",
@@ -233,15 +247,25 @@ def build_config(
                     "2016postVFP": "data/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json.gz",
                     "2017": "data/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json.gz",
                     "2018": "data/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json.gz",
+                    "2024": "data/jsonpog-integration/POG/MUO/2024_Summer24/muon_Z.json.gz",
                 }
             ),
             "muon_id_sf_name": "NUM_TightID_DEN_TrackerMuons",
-            "muon_iso_sf_name": "NUM_TightRelIso_DEN_TightIDandIPCut",
+            "muon_iso_sf_name": EraModifier(
+                {
+                    "2016preVFP": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                    "2016postVFP": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                    "2018": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                    "2024": "NUM_TightPFIso_DEN_TightID",
+                    "2017": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                }
+            ),
             "muon_trigger_sf_name": EraModifier(
                 {
                     "2016preVFP": "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight",
                     "2016postVFP": "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight",
                     "2018": "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight",
+                    "2024": "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight",
                     "2017": "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight",
                 }
             ),
@@ -251,6 +275,7 @@ def build_config(
                     "2016postVFP": "2016postVFP_UL",
                     "2017": "2017_UL",
                     "2018": "2018_UL",
+                    "2024": "2024_Summer24",
                 }
             ),
             "muon_sf_varation": "nominal",  # "nominal" is nominal, "systup"/"systdown" are up/down variations
@@ -267,24 +292,43 @@ def build_config(
                     "2016postVFP": "data/jsonpog-integration/POG/EGM/2016postVFP_UL/electron.json.gz",
                     "2017": "data/jsonpog-integration/POG/EGM/2017_UL/electron.json.gz",
                     "2018": "data/jsonpog-integration/POG/EGM/2018_UL/electron.json.gz",
+                    "2024": "data/jsonpog-integration/POG/EGM/2024_Summer24/electron_v1.json.gz",
                 }
             ),
-            "ele_id_sf_name": "UL-Electron-ID-SF",
+            "ele_id_sf_name": EraModifier(
+                {
+                    "2016preVFP": "UL-Electron-ID-SF",
+                    "2016postVFP": "UL-Electron-ID-SF",
+                    "2017": "UL-Electron-ID-SF",
+                    "2018": "UL-Electron-ID-SF",
+                    "2024": "Electron-ID-SF",
+                }
+            ),
             "ele_sf_year_id": EraModifier(
                 {
                     "2016preVFP": "2016preVFP",
                     "2016postVFP": "2016postVFP",
                     "2017": "2017",
                     "2018": "2018",
+                    "2024": "2024Prompt",
                 }
             ),
-            "ele_sf_varation": "sf",  # "sf" is nominal, "sfup"/"sfdown" are up/down variations
+            "ele_sf_varation": EraModifier(
+                {
+                    "2016preVFP": "sf",
+                    "2016postVFP": "sf",
+                    "2017": "sf",
+                    "2018": "sf",
+                    "2024": "nominal",
+                }
+            ),
             "nom_ele_trigger_sf_file": EraModifier(
                 {
                     "2016preVFP": "data/custom_top_sf/electron/2016preVFP_UL/trigger_2016preVFP.json.gz",
                     "2016postVFP": "data/custom_top_sf/electron/2016postVFP_UL/trigger_2016postVFP.json.gz",
                     "2017": "data/custom_top_sf/electron/2017_UL/trigger_2017.json.gz",
                     "2018": "data/custom_top_sf/electron/2018_UL/trigger_2018.json.gz",
+                    "2024": " ",
                 }
             ),
             "syst_ele_trigger_sf_file": EraModifier(
@@ -293,6 +337,7 @@ def build_config(
                     "2016postVFP": "data/custom_top_sf/electron/2016postVFP_UL/trigger_2016postVFP_syststat.json.gz",
                     "2017": "data/custom_top_sf/electron/2017_UL/trigger_2017_syststat.json.gz",
                     "2018": "data/custom_top_sf/electron/2018_UL/trigger_2018_syststat.json.gz",
+                    "2024": " ",
                 }
             ),
             "nom_ele_trigger_sf_name": "h2_scaleFactorsEGamma",
@@ -414,6 +459,38 @@ def build_config(
             scalefactors.MuonIDIsoTrigger_SF
         ],
     )
+    if era == "2024":
+        configuration.add_modification_rule(
+            "ee",
+            RemoveProducer(
+                producers=[
+                    scalefactors.ElectronIDTrigger_SF,
+                ],
+                samples=["Haa", "bkg"],
+            )
+        )
+        configuration.add_modification_rule(
+            "em",
+            RemoveProducer(
+                producers=[
+                    scalefactors.ElectronIDTrigger_SF,
+                ],
+                samples=["Haa", "bkg"],
+            )
+        )
+        configuration.add_producers(
+            "ee",
+            [
+                scalefactors.Ele_1_ID_SF,
+                scalefactors.Ele_2_ID_SF,
+            ],
+        )
+        configuration.add_producers(
+            "em",
+            [
+                scalefactors.Ele_1_ID_SF,
+            ],
+        )
     configuration.add_modification_rule(
         "global",
         RemoveProducer(
