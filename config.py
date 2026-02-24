@@ -71,7 +71,7 @@ def build_config(
                     "2016postVFP": "data/golden_json/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
                     "2017": "data/golden_json/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
                     "2018": "data/golden_json/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
-                    "2024": "data/golden_json/Cert_Collisions24_378981_386951_Golden.json",
+                    "2024": "data/golden_json/Cert_Collisions2024_378981_386951_Golden.json",
                 }
             ),
             "met_filters": EraModifier(
