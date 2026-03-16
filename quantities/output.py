@@ -29,6 +29,7 @@ jet_photon_overlap_veto_mask = Quantity("jet_photon_overlap_veto_mask")
 pfcand_electron_overlap_veto_mask = Quantity("pfcand_electron_overlap_veto_mask")
 pfcand_muon_overlap_veto_mask = Quantity("pfcand_muon_overlap_veto_mask")
 pfcand_photon_overlap_veto_mask = Quantity("pfcand_photon_overlap_veto_mask")
+met_pt_mask = Quantity("met_pt_mask")
 good_jets_mask = Quantity("good_jets_mask")
 good_fatjets_mask = Quantity("good_fatjets_mask")
 good_bjets_mask = Quantity("good_bjets_mask")
@@ -49,6 +50,8 @@ good_bjet_collection = Quantity("good_bjet_collection")
 base_zs_mask = Quantity("base_zs_mask")
 z_p4 = Quantity("z_p4")
 z_pt = Quantity("z_pt")
+
+ordered_good_lepton_indices = Quantity("ordered_good_lepton_indices")
 
 nelectrons = Quantity("nelectrons")
 nmuons = Quantity("nmuons")
@@ -373,6 +376,7 @@ THU_qqH_25 = Quantity("THU_qqH_25")
 THU_qqH_JET01 = Quantity("THU_qqH_JET01")
 
 ## MET quantities
+mt = Quantity("mt")
 met_p4 = Quantity("met_p4")
 recoil_genboson_p4_vec = Quantity("recoil_genboson_p4_vec")
 genbosonmass = Quantity("genbosonmass")
@@ -426,6 +430,7 @@ nano_pfcands_d0Err = Quantity("nano_pfcands_d0Err")
 nano_pfcands_dz = Quantity("nano_pfcands_dz")
 nano_pfcands_dzErr = Quantity("nano_pfcands_dzErr")
 nano_pfcands_trkQuality = Quantity("nano_pfcands_trkQuality")
+nano_pfcands_fromPV = Quantity("nano_pfcands_fromPV")
 
 # unsafe nano PFCand vars
 
@@ -495,3 +500,10 @@ iso_wgt_mu_1 = Quantity("iso_wgt_mu_1")
 iso_wgt_mu_2 = Quantity("iso_wgt_mu_2")
 trigger_wgt_mu_1 = Quantity("trigger_wgt_mu_1")
 trigger_wgt_mu_2 = Quantity("trigger_wgt_mu_2")
+
+# TriggerObject Quantities
+TriggerObject_filterBits_vector = Quantity("TriggerObject_filterBits_vector")
+TriggerObject_pt_vector = Quantity("TriggerObject_pt_vector")
+TriggerObject_eta_vector = Quantity("TriggerObject_eta_vector")
+TriggerObject_phi_vector = Quantity("TriggerObject_phi_vector")
+TriggerObject_id_vector = Quantity("TriggerObject_id_vector")

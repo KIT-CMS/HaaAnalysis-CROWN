@@ -1,0 +1,800 @@
+from __future__ import annotations  # needed for type annotations in > python 3.7
+
+from typing import List
+
+from .producers import event as event
+from .producers import genparticles as genparticles
+from .producers import muons as muons
+from .producers import electrons as electrons
+from .producers import photons as photons
+from .producers import pairquantities as pairquantities
+from .producers import pairselection as pairselection
+from .producers import higgs as higgs
+from .producers import higgsdaughters as higgsdaughters
+from .producers import pfcands as pfcands
+from .producers import met as met
+from .producers import fromnano as fromnano
+from .producers import scalefactors as scalefactors
+from .producers import trigger as triggers
+#from .producers import fromnano as fromnano
+from .quantities import nanoAOD as nanoAOD
+from .quantities import output as q
+from code_generation.configuration import Configuration
+from code_generation.modifiers import EraModifier
+from code_generation.rules import RemoveProducer
+from code_generation.systematics import SystematicShift
+
+
+def build_config(
+    era: str,
+    sample: str,
+    scopes: List[str],
+    shifts: List[str],
+    available_sample_types: List[str],
+    available_eras: List[str],
+    available_scopes: List[str],
+):
+    configuration = Configuration(
+        era,
+        sample,
+        scopes,
+        shifts,
+        available_sample_types,
+        available_eras,
+        available_scopes,
+    )
+
+    configuration.add_config_parameters(
+        "global",
+        {
+            "PU_reweighting_file": EraModifier(
+                {
+                    "2016preVFP": "data/jsonpog-integration/POG/LUM/2016preVFP_UL/puWeights.json.gz",
+                    "2016postVFP": "data/jsonpog-integration/POG/LUM/2016postVFP_UL/puWeights.json.gz",
+                    "2017": "data/jsonpog-integration/POG/LUM/2017_UL/puWeights.json.gz",
+                    "2018": "data/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz",
+                    "2024": "data/jsonpog-integration/POG/LUM/2024_Summer24/puWeights_BCDEFGHI.json.gz",
+                }
+            ),
+            "PU_reweighting_era": EraModifier(
+                {
+                    "2016preVFP": "Collisions16_UltraLegacy_goldenJSON",
+                    "2016postVFP": "Collisions16_UltraLegacy_goldenJSON",
+                    "2017": "Collisions17_UltraLegacy_goldenJSON",
+                    "2018": "Collisions18_UltraLegacy_goldenJSON",
+                    "2024": "Collisions24_BCDEFGHI_goldenJSON",
+                }
+            ),
+            "PU_reweighting_variation": "nominal",
+
+            "golden_json_file": EraModifier(
+                {
+                    "2016preVFP": "data/golden_json/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
+                    "2016postVFP": "data/golden_json/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
+                    "2017": "data/golden_json/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
+                    "2018": "data/golden_json/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
+                    "2024": "data/golden_json/Cert_Collisions2024_378981_386951_Golden.json",
+                }
+            ),
+            "met_filters": EraModifier(
+                {
+                    "2016preVFP": [
+                        "Flag_goodVertices",
+                        "Flag_globalSuperTightHalo2016Filter",
+                        "Flag_HBHENoiseFilter",
+                        "Flag_HBHENoiseIsoFilter",
+                        "Flag_EcalDeadCellTriggerPrimitiveFilter",
+                        "Flag_BadPFMuonFilter",
+                        "Flag_BadPFMuonDzFilter", # only since nanoAODv9 available
+                        "Flag_eeBadScFilter",
+                    ],
+                    "2016postVFP": [
+                        "Flag_goodVertices",
+                        "Flag_globalSuperTightHalo2016Filter",
+                        "Flag_HBHENoiseFilter",
+                        "Flag_HBHENoiseIsoFilter",
+                        "Flag_EcalDeadCellTriggerPrimitiveFilter",
+                        "Flag_BadPFMuonFilter",
+                        "Flag_BadPFMuonDzFilter", # only since nanoAODv9 available
+                        "Flag_eeBadScFilter",
+                    ],
+                    "2017": [
+                        "Flag_goodVertices",
+                        "Flag_globalSuperTightHalo2016Filter",
+                        "Flag_HBHENoiseFilter",
+                        "Flag_HBHENoiseIsoFilter",
+                        "Flag_EcalDeadCellTriggerPrimitiveFilter",
+                        "Flag_BadPFMuonFilter",
+                        "Flag_BadPFMuonDzFilter", # only since nanoAODv9 available
+                        "Flag_eeBadScFilter",
+                        "Flag_ecalBadCalibFilter",
+                    ],
+                    "2018": [
+                        "Flag_goodVertices",
+                        "Flag_globalSuperTightHalo2016Filter",
+                        "Flag_HBHENoiseFilter",
+                        "Flag_HBHENoiseIsoFilter",
+                        "Flag_EcalDeadCellTriggerPrimitiveFilter",
+                        "Flag_BadPFMuonFilter",
+                        "Flag_BadPFMuonDzFilter", # only since nanoAODv9 available
+                        "Flag_eeBadScFilter",
+                        "Flag_ecalBadCalibFilter",
+                    ],
+                    "2024": [
+                        "Flag_goodVertices",
+                        "Flag_globalSuperTightHalo2016Filter",
+                        "Flag_HBHENoiseFilter",
+                        "Flag_HBHENoiseIsoFilter",
+                        "Flag_EcalDeadCellTriggerPrimitiveFilter",
+                        "Flag_BadPFMuonFilter",
+                        "Flag_BadPFMuonDzFilter", # only since nanoAODv9 available
+                        "Flag_eeBadScFilter",
+                        "Flag_ecalBadCalibFilter",
+                    ],
+                }
+            ),
+        },
+    )
+    configuration.add_config_parameters(
+        ["mmet"],
+        {
+            "singlemoun_trigger": EraModifier(
+                {
+                    "2016preVFP": [
+                        {
+                            "flagname": "trg_single_mu",
+                            "hlt_path": "HLT_IsoMu24",
+                            "ptcut": 24,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 13,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                    "2016postVFP": [
+                        {
+                            "flagname": "trg_single_mu",
+                            "hlt_path": "HLT_IsoMu24",
+                            "ptcut": 24,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 13,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                    "2017": [
+                        {
+                            "flagname": "trg_single_mu",
+                            "hlt_path": "HLT_IsoMu27",
+                            "ptcut": 27,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 13,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                    "2018": [
+                        {
+                            "flagname": "trg_single_mu",
+                            "hlt_path": "HLT_IsoMu24",
+                            "ptcut": 24,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 13,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                }
+            ),
+
+        },
+    )
+    configuration.add_config_parameters(
+        ["emet"],
+        {
+            "singleelectron_trigger": EraModifier(
+                {
+                    "2016preVFP": [
+                        {
+                            "flagname": "trg_single_el",
+                            "hlt_path": "HLT_Ele20_WPLoose_Gsf",
+                            "ptcut": 20,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 11,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                    "2016postVFP": [
+                        {
+                            "flagname": "trg_single_el",
+                            "hlt_path": "HLT_Ele20_WPLoose_Gsf",
+                            "ptcut": 20,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 11,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                    "2017": [
+                        {
+                            "flagname": "trg_single_el",
+                            "hlt_path": "HLT_Ele20_WPLoose_Gsf",
+                            "ptcut": 20,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 11,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                    "2018": [
+                        {
+                            "flagname": "trg_single_el",
+                            "hlt_path": "HLT_Ele20_WPLoose_Gsf",
+                            "ptcut": 20,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 11,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                }
+            ),
+        },
+    )
+    # base selection:
+    configuration.add_config_parameters(
+        "global",
+        {
+            "min_muon_pt": 0.0,
+            "muon_id": "Muon_looseId",
+            "min_electron_pt": 0.0,
+            "electron_id": "Electron_cutBased",
+            "electron_id_wp": 2,
+            "photon_id": "Photon_cutBased",
+            "photon_id_wp": 2,
+            
+            "pfcands_pdgid": "211,-211",
+            "min_pfcands_pt": 1.,
+            "max_pfcands_eta": 2.5,
+            "min_pfcands_mass": 0.139,
+            "max_pfcands_mass": 0.14,
+
+            "charged_pfcands_pdgid": "211,-211",
+            "neutral_pfcands_pdgid": "130",
+            "photon_pfcands_pdgid": "22",
+            "fromPV": "2,3",
+
+            "genpart_pdgid": "23",
+            "genpart_status": "62",
+
+            "btag_cut": 0.6,
+            "deltaR_jet_veto": 0.4,
+
+            "min_fatjet_pt": 0.0,
+
+            "min_MET_pt": 23.0,
+        },
+    )
+    # MMET scope Muon selection
+    configuration.add_config_parameters(
+        ["mmet"],
+        {
+            "muon_index_in_pair": 0,
+            "second_muon_index_in_pair": 1,
+            "min_muon_pt": 23.0,
+            "max_muon_eta": 2.4,
+            "max_muon_dxy": 0.045,
+            "max_muon_dz": 0.2,
+            "muon_id": "Muon_tightId",
+            "muon_iso_cut": 0.15,
+        },
+    )
+    
+    # EMET scope Electron selection
+    configuration.add_config_parameters(
+        ["emet"],
+        {
+            "electron_index_in_pair": 0,
+            "second_electron_index_in_pair": 1,
+            "min_electron_pt": 23.0,
+            "max_electron_eta": 2.4,
+            "max_electron_dxy": 0.045,
+            "max_electron_dz": 0.2,
+            "electron_id": "Electron_cutBased",
+            "electron_id_wp": 3,
+            "electron_iso_cut": 0.15,
+        },
+    )
+
+    # EM scope Electron selection
+#    configuration.add_config_parameters(
+#        ["em"],
+#        {
+#            "min_electron_pt": 23.0,
+#            "max_electron_eta": 2.1,
+#            "max_electron_dxy": 0.045,
+#            "max_electron_dz": 0.2,
+#            "electron_id": "Electron_cutBased",
+#            "electron_id_wp": 2,
+#            "electron_iso_cut": 0.15,
+#            "min_muon_pt": 23.0,
+#            "max_muon_eta": 2.1,
+#            "max_muon_dxy": 0.045,
+#            "max_muon_dz": 0.2,
+#            "muon_id": "Muon_mediumId",
+#            "muon_iso_cut": 0.15,
+#        },
+#    )
+    
+    # Muon scale factors configuration
+    configuration.add_config_parameters(
+        ["mmet"],
+        {
+            "muon_sf_file": EraModifier(
+                {
+                    "2016preVFP": "data/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json.gz",
+                    "2016postVFP": "data/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json.gz",
+                    "2017": "data/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json.gz",
+                    "2018": "data/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json.gz",
+                    "2024": "data/jsonpog-integration/POG/MUO/2024_Summer24/muon_Z.json.gz",
+                }
+            ),
+            "muon_id_sf_name": "NUM_TightID_DEN_TrackerMuons",
+            "muon_iso_sf_name": EraModifier(
+                {
+                    "2016preVFP": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                    "2016postVFP": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                    "2018": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                    "2024": "NUM_TightPFIso_DEN_TightID",
+                    "2017": "NUM_TightRelIso_DEN_TightIDandIPCut",
+                }
+            ),
+            "muon_trigger_sf_name": EraModifier(
+                {
+                    "2016preVFP": "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight",
+                    "2016postVFP": "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight",
+                    "2018": "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight",
+                    "2024": "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight",
+                    "2017": "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight",
+                }
+            ),
+            "muon_sf_year_id": EraModifier(
+                {
+                    "2016preVFP": "2016preVFP_UL",
+                    "2016postVFP": "2016postVFP_UL",
+                    "2017": "2017_UL",
+                    "2018": "2018_UL",
+                    "2024": "2024_Summer24",
+                }
+            ),
+            "muon_sf_varation": "nominal",  # "nominal" is nominal, "systup"/"systdown" are up/down variations
+        },
+    )    
+    
+    # electron scale factors configuration
+    configuration.add_config_parameters(
+        ["emet"],
+        {
+            "ele_sf_file": EraModifier(
+                {
+                    "2016preVFP": "data/jsonpog-integration/POG/EGM/2016preVFP_UL/electron.json.gz",
+                    "2016postVFP": "data/jsonpog-integration/POG/EGM/2016postVFP_UL/electron.json.gz",
+                    "2017": "data/jsonpog-integration/POG/EGM/2017_UL/electron.json.gz",
+                    "2018": "data/jsonpog-integration/POG/EGM/2018_UL/electron.json.gz",
+                    "2024": "data/jsonpog-integration/POG/EGM/2024_Summer24/electron_v1.json.gz",
+                }
+            ),
+            "ele_id_sf_name": EraModifier(
+                {
+                    "2016preVFP": "UL-Electron-ID-SF",
+                    "2016postVFP": "UL-Electron-ID-SF",
+                    "2017": "UL-Electron-ID-SF",
+                    "2018": "UL-Electron-ID-SF",
+                    "2024": "Electron-ID-SF",
+                }
+            ),
+            "ele_sf_year_id": EraModifier(
+                {
+                    "2016preVFP": "2016preVFP",
+                    "2016postVFP": "2016postVFP",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2024": "2024Prompt",
+                }
+            ),
+            "ele_sf_varation": EraModifier(
+                {
+                    "2016preVFP": "sf",
+                    "2016postVFP": "sf",
+                    "2017": "sf",
+                    "2018": "sf",
+                    "2024": "nominal",
+                }
+            ),
+            "nom_ele_trigger_sf_file": EraModifier(
+                {
+                    "2016preVFP": "data/custom_top_sf/electron/2016preVFP_UL/trigger_2016preVFP.json.gz",
+                    "2016postVFP": "data/custom_top_sf/electron/2016postVFP_UL/trigger_2016postVFP.json.gz",
+                    "2017": "data/custom_top_sf/electron/2017_UL/trigger_2017.json.gz",
+                    "2018": "data/custom_top_sf/electron/2018_UL/trigger_2018.json.gz",
+                    "2024": " ",
+                }
+            ),
+            "syst_ele_trigger_sf_file": EraModifier(
+                {
+                    "2016preVFP": "data/custom_top_sf/electron/2016preVFP_UL/trigger_2016preVFP_syststat.json.gz",
+                    "2016postVFP": "data/custom_top_sf/electron/2016postVFP_UL/trigger_2016postVFP_syststat.json.gz",
+                    "2017": "data/custom_top_sf/electron/2017_UL/trigger_2017_syststat.json.gz",
+                    "2018": "data/custom_top_sf/electron/2018_UL/trigger_2018_syststat.json.gz",
+                    "2024": " ",
+                }
+            ),
+            "nom_ele_trigger_sf_name": "h2_scaleFactorsEGamma",
+            "syst_ele_trigger_sf_name": "h2_uncertaintiesEGamma",
+        },
+    )
+
+    ## all scopes misc settings
+    configuration.add_config_parameters(
+        scopes,
+        {
+            "deltaR_jet_veto": 0.4,
+            "pairselection_min_dR": 0.5,
+        },
+    )
+
+    configuration.add_producers(
+        "global",
+        [
+            met.METpTCut,
+            met.METpTCutFilter,
+            met.BuildMetVector,
+            event.SampleFlags,
+            event.PUweights,
+            event.Lumi,
+            event.MetFilter,
+            muons.BaseMuons,
+            electrons.BaseElectrons,
+            photons.BasePhotons,
+            pfcands.BasePFCands,
+            pfcands.ChargedPFCands,
+            pfcands.NeutralPFCands,
+            pfcands.PhotonPFCands,
+            pfcands.fromPV
+        ],
+    )
+    if sample == "data":
+        configuration.add_producers(
+            "global",
+            [
+                event.JSONFilter,
+            ],
+        )
+    
+    configuration.add_producers(
+        scopes,
+        [
+            higgs.ChargePairs,
+            higgs.GoodHiggsDaughtersFilter,
+            higgs.HiggsQuantities,
+            higgsdaughters.dQuantities,
+            higgs.GetPS,
+            higgsdaughters.ps_daughters,
+            higgs.ps_quantities,
+        ],
+    )
+    configuration.add_producers(
+        "mmet",
+        [
+            muons.GoodMuons,
+            muons.GoodMuonsFilter,
+            muons.NumberOfGoodMuons,
+            muons.orderedMuons,
+            muons.LVHardestMuon,
+            triggers.GenerateSingleMuonTriggerFlags,
+            pairquantities.UnrollMuLV1,
+            met.MT,
+            scalefactors.MuonIDIsoTrigger_SF,
+        ],
+    )
+    
+    configuration.add_producers(
+        "emet",
+        [
+            electrons.GoodElectrons,
+            electrons.GoodElectronsFilter,
+            electrons.NumberOfGoodElectrons,
+            electrons.orderedElectrons,
+            electrons.LVHardestElectron,
+            triggers.GenerateSingleElectronTriggerFlags,
+            pairquantities.UnrollElLV1,
+            met.MT,
+            scalefactors.ElectronIDTrigger_SF
+        ],
+    )
+
+#    configuration.add_producers(
+#        "em",
+#        [
+#            electrons.GoodElectrons,
+#            electrons.NumberOfGoodElectrons,
+#            muons.GoodMuons,
+#            muons.NumberOfGoodMuons,
+#            pairselection.EMPairSelection,
+#            pairselection.GoodEMPairFilter,
+#            pairselection.LVEl1,
+#            pairselection.LVMu2,
+#            pairquantities.EMDiTauPairQuantities,
+#            genparticles.EMGenDiTauPairQuantities,
+#            scalefactors.ElectronIDTrigger_SF,
+#            scalefactors.MuonIDIsoTrigger_SF
+#        ],
+#    )
+    if era == "2024":
+        configuration.add_modification_rule(
+            "emet",
+            RemoveProducer(
+                producers=[
+                    scalefactors.ElectronIDTrigger_SF,
+                ],
+                samples=["Haa", "bkg"],
+            )
+        )
+        configuration.add_producers(
+            "emet",
+            [
+                scalefactors.Ele_1_ID_SF,
+            ],
+        )
+    configuration.add_modification_rule(
+        "global",
+        RemoveProducer(
+            producers=[
+                event.PUweights,
+                ],
+            samples=["data"],
+        ),
+    )
+    configuration.add_modification_rule(
+        "mmet",
+        RemoveProducer(
+            producers=[
+                scalefactors.MuonIDIsoTrigger_SF,
+            ],
+            samples=["data"],
+        ),
+    )
+#    configuration.add_modification_rule(
+#        "em",
+#        RemoveProducer(
+#            producers=[
+#                genparticles.EMGenDiTauPairQuantities,
+#                scalefactors.ElectronIDTrigger_SF,
+#                scalefactors.MuonIDIsoTrigger_SF   
+#            ],
+#            samples=["data"],
+#        ),
+#    )
+    configuration.add_modification_rule(
+        "emet",
+        RemoveProducer(
+            producers=[
+                scalefactors.ElectronIDTrigger_SF,
+            ],
+            samples=["data"],
+        ),
+    )
+    configuration.add_outputs(
+        "global",
+	[
+        nanoAOD.PV_npvs,
+        nanoAOD.PV_npvsGood,
+        q.H_pt,
+	    q.H_eta,
+	    q.H_phi,
+	    q.H_mass,
+        q.ps_1_mass,
+        q.ps_2_mass,
+        q.ps_1_deltaR,
+        q.ps_2_deltaR,
+	    q.d1_pt,
+	    q.d1_eta,
+	    q.d1_phi,
+        q.d1_iso,
+	    q.d2_pt,
+	    q.d2_eta,
+	    q.d2_phi,
+        q.d2_iso,
+	    q.d3_pt,
+	    q.d3_eta,
+	    q.d3_phi,
+        q.d3_iso,
+	    q.d4_pt,
+	    q.d4_eta,
+	    q.d4_phi,
+        q.d4_iso,
+        ],
+    )
+
+    if sample != "data":
+        configuration.add_outputs(
+            "global",
+            [
+                nanoAOD.genWeight,
+            ],
+        )
+	 	
+    configuration.add_outputs(
+       "mmet",
+        [
+            q.is_data,
+            q.is_embedding,
+            q.is_ttbar,
+            q.is_dyjets,
+            q.is_wjets,
+            q.is_diboson,
+            nanoAOD.run,
+            q.lumi,
+            nanoAOD.event,
+            q.puweight,
+            q.pt_1,
+            q.eta_1,
+            q.phi_1,
+            triggers.GenerateSingleMuonTriggerFlags.output_group,
+            q.mt,
+            q.id_wgt_mu_1,
+            q.iso_wgt_mu_1,
+            q.trigger_wgt_mu_1,
+        ],
+    )
+    configuration.add_outputs(
+        "emet",
+        [
+            q.is_data,
+            q.is_embedding,
+            q.is_ttbar,
+            q.is_dyjets,
+            q.is_wjets,
+            q.is_diboson,
+            nanoAOD.run,
+            q.lumi,
+            nanoAOD.event,
+            q.puweight,
+            q.pt_1,
+            q.eta_1,
+            q.phi_1,
+            triggers.GenerateSingleElectronTriggerFlags.output_group,
+            q.mt,
+            q.id_wgt_ele_1,
+            q.trigger_wgt_ele_1,
+            q.trigger_wgt_ele_1_up,
+            q.trigger_wgt_ele_1_down,
+            ],
+    )
+
+    configuration.add_shift(
+        SystematicShift(
+            name="PUUp",
+            shift_config={"global": {"PU_reweighting_variation": "up"}},
+            producers={
+                "global": [
+                    event.PUweights,
+                ],
+            },
+        )
+    )
+    configuration.add_shift(
+        SystematicShift(
+            name="PUDown",
+            shift_config={"global": {"PU_reweighting_variation": "down"}},
+            producers={
+                "global": [
+                    event.PUweights,
+                ],
+            },
+        )
+    )
+    configuration.add_shift(
+        SystematicShift(
+            name="MuonIDUp",
+            shift_config={"mmet": {"muon_sf_varation": "systup"}},
+            producers={
+                "mmet": [
+                    scalefactors.Muon_1_ID_SF,
+                ],
+            },
+        )
+    )
+    configuration.add_shift(
+        SystematicShift(
+            name="MuonIDDown",
+            shift_config={"mmet": {"muon_sf_varation": "systdown"}},
+            producers={
+                "mmet": [
+                    scalefactors.Muon_1_ID_SF,
+                ],
+            },
+        )
+    )
+
+    configuration.add_shift(
+        SystematicShift(
+            name="MuonIsoUp",
+            shift_config={"mmet": {"muon_sf_varation": "systup"}},
+            producers={
+                "mmet": [
+                    scalefactors.Muon_1_Iso_SF,
+                ],
+            },
+        )
+    )
+
+    configuration.add_shift(
+        SystematicShift(
+            name="MuonIsoDown",
+            shift_config={"mmet": {"muon_sf_varation": "systdown"}},
+            producers={
+                "mmet": [
+                    scalefactors.Muon_1_Iso_SF,
+                ],
+            },
+        )
+    )
+
+    configuration.add_shift(
+        SystematicShift(
+            name="MuonTriggerUp",
+            shift_config={"mmet": {"muon_sf_varation": "systup"}},
+            producers={
+                "mmet": [
+                    scalefactors.Muon_1_Trigger_SF,
+                ],
+            },
+        )
+    )
+
+    configuration.add_shift(
+        SystematicShift(
+            name="MuonTriggerDown",
+            shift_config={"mmet": {"muon_sf_varation": "systdown"}},
+            producers={
+                "mmet": [
+                    scalefactors.Muon_1_Trigger_SF,
+                ],
+            },
+        )
+    )
+
+    configuration.add_shift(
+        SystematicShift(
+            name="ElectronIDUp",
+            shift_config={"emet": {"ele_sf_varation": "sfup"}},
+            producers={
+                "emet": [
+                    scalefactors.Ele_1_ID_SF,
+                ],
+            },
+        )
+    )
+
+    configuration.add_shift(
+        SystematicShift(
+            name="ElectronIDDown",
+            shift_config={"emet": {"ele_sf_varation": "sfdown"}},
+            producers={
+                "emet": [
+                    scalefactors.Ele_1_ID_SF,
+                ],
+            },
+        )
+    )
+
+
+    #########################
+    # Finalize and validate the configuration
+    #########################
+    configuration.optimize()
+    configuration.validate()
+    configuration.report()
+    return configuration.expanded_configuration()
