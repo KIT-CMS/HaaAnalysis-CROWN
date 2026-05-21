@@ -184,6 +184,17 @@ def build_config(
                             "max_deltaR_triggermatch": 0.4,
                         },
                     ],
+                    "2024": [
+                        {
+                            "flagname": "trg_single_mu",
+                            "hlt_path": "HLT_IsoMu24",
+                            "ptcut": 24,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 13,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
                 }
             ),
 
@@ -228,6 +239,17 @@ def build_config(
                         },
                     ],
                     "2018": [
+                        {
+                            "flagname": "trg_single_el",
+                            "hlt_path": "HLT_Ele20_WPLoose_Gsf",
+                            "ptcut": 20,
+                            "etacut": 2.5,
+                            "filterbit": -1,
+                            "trigger_particle_id": 11,
+                            "max_deltaR_triggermatch": 0.4,
+                        },
+                    ],
+                    "2024": [
                         {
                             "flagname": "trg_single_el",
                             "hlt_path": "HLT_Ele20_WPLoose_Gsf",
