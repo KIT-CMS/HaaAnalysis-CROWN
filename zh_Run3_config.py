@@ -452,26 +452,51 @@ def build_config(
                     "2024": "sf",
                 }
             ),
-            "nom_ele_trigger_sf_file": EraModifier(
+            "ele_trigger_sf_file": EraModifier(
                 {
-                    "2016preVFP": "data/custom_top_sf/electron/2016preVFP_UL/trigger_2016preVFP.json.gz",
-                    "2016postVFP": "data/custom_top_sf/electron/2016postVFP_UL/trigger_2016postVFP.json.gz",
-                    "2017": "data/custom_top_sf/electron/2017_UL/trigger_2017.json.gz",
-                    "2018": "data/custom_top_sf/electron/2018_UL/trigger_2018.json.gz",
-                    "2024": " ",
+                    "2016preVFP": " ",
+                    "2016postVFP": " ",
+                    "2017": " ",
+                    "2018": " ",
+                    "2024": "data/jsonpog-integration/POG/EGM/2024_Summer24/electronHlt.json.gz",
                 }
             ),
-            "syst_ele_trigger_sf_file": EraModifier(
+            "ele_trigger_sf_name": EraModifier(
                 {
-                    "2016preVFP": "data/custom_top_sf/electron/2016preVFP_UL/trigger_2016preVFP_syststat.json.gz",
-                    "2016postVFP": "data/custom_top_sf/electron/2016postVFP_UL/trigger_2016postVFP_syststat.json.gz",
-                    "2017": "data/custom_top_sf/electron/2017_UL/trigger_2017_syststat.json.gz",
-                    "2018": "data/custom_top_sf/electron/2018_UL/trigger_2018_syststat.json.gz",
-                    "2024": " ",
+                    "2016preVFP": " ",
+                    "2016postVFP": " ",
+                    "2017": " ",
+                    "2018": " ",
+                    "2024": "Electron-HLT-SF",
                 }
             ),
-            "nom_ele_trigger_sf_name": "h2_scaleFactorsEGamma",
-            "syst_ele_trigger_sf_name": "h2_uncertaintiesEGamma",
+            "ele_trigger_sf_year_id": EraModifier(
+                {
+                    "2016preVFP": " ",
+                    "2016postVFP": " ",
+                    "2017": " ",
+                    "2018": " ",
+                    "2024": "2024Prompt",
+                }
+            ),
+            "ele_trigger_sf_varation": EraModifier(
+                {
+                    "2016preVFP": "sf",
+                    "2016postVFP": "sf",
+                    "2017": "sf",
+                    "2018": "sf",
+                    "2024": "sf",
+                }
+            ),
+            "ele_trigger_sf_path": EraModifier(
+                {
+                    "2016preVFP": " ",
+                    "2016postVFP": " ",
+                    "2017": " ",
+                    "2018": " ",
+                    "2024": "HLT_SF_Ele30_TightID",
+                }
+            ),
         },
     )
 
@@ -554,7 +579,7 @@ def build_config(
             triggers.GenerateSingleMuonTriggerFlags,
             pairquantities.MMDiTauPairQuantities,
             genparticles.MMGenDiTauPairQuantities,
-            scalefactors.MuonIDIsoTrigger_SF,
+            scalefactors.LeptonSF_run3,
         ],
     )
     
@@ -570,7 +595,7 @@ def build_config(
             triggers.GenerateSingleElectronTriggerFlags,
             pairquantities.EEDiTauPairQuantities,
             genparticles.EEGenDiTauPairQuantities,
-            scalefactors.ElectronIDTrigger_SF
+            scalefactors.LeptonSF_run3
         ],
     )
 
@@ -589,30 +614,9 @@ def build_config(
             triggers.GenerateSingleElectronTriggerFlags,
             pairquantities.EMDiTauPairQuantities,
             genparticles.EMGenDiTauPairQuantities,
-            scalefactors.ElectronIDTrigger_SF,
-            scalefactors.MuonIDIsoTrigger_SF
+            scalefactors.LeptonSF_run3
         ],
     )
-    if era == "2024":
-        configuration.add_modification_rule(
-            "ee",
-            RemoveProducer(
-                producers=[
-                    scalefactors.Ele_1_Trigger_SF,
-                    scalefactors.Ele_2_Trigger_SF,
-                ],
-                samples=["Haa", "bkg"],
-            )
-        )
-        configuration.add_modification_rule(
-            "em",
-            RemoveProducer(
-                producers=[
-                    scalefactors.Ele_1_Trigger_SF,
-                ],
-                samples=["Haa", "bkg"],
-            )
-        )
     configuration.add_modification_rule(
         "global",
         RemoveProducer(
@@ -627,7 +631,7 @@ def build_config(
         RemoveProducer(
             producers=[
                 genparticles.MMGenDiTauPairQuantities,
-                scalefactors.MuonIDIsoTrigger_SF,
+                scalefactors.LeptonSF_run3,
             ],
             samples=["data"],
         ),
@@ -637,8 +641,7 @@ def build_config(
         RemoveProducer(
             producers=[
                 genparticles.EMGenDiTauPairQuantities,
-                scalefactors.ElectronIDTrigger_SF,
-                scalefactors.MuonIDIsoTrigger_SF   
+                scalefactors.LeptonSF_run3, 
             ],
             samples=["data"],
         ),
@@ -648,7 +651,7 @@ def build_config(
         RemoveProducer(
             producers=[
                 genparticles.EEGenDiTauPairQuantities,
-                scalefactors.ElectronIDTrigger_SF
+                scalefactors.LeptonSF_run3
             ],
             samples=["data"],
         ),
@@ -807,11 +810,7 @@ def build_config(
             q.id_wgt_ele_1,
             q.id_wgt_ele_2,
             q.trigger_wgt_ele_1,
-            q.trigger_wgt_ele_1_up,
-            q.trigger_wgt_ele_1_down,
             q.trigger_wgt_ele_2,
-            q.trigger_wgt_ele_2_up,
-            q.trigger_wgt_ele_2_down
             ],
     )
     configuration.add_outputs(
@@ -856,8 +855,6 @@ def build_config(
             q.id_wgt_mu_2,
             q.iso_wgt_mu_2,
             q.trigger_wgt_ele_1,
-            q.trigger_wgt_ele_1_up,
-            q.trigger_wgt_ele_1_down,
             q.trigger_wgt_mu_2
             ],
     )
@@ -1012,6 +1009,37 @@ def build_config(
         )
     )
 
+    configuration.add_shift(
+        SystematicShift(
+            name="ElectronTriggerUp",
+            shift_config={"ee": {"ele_trigger_sf_varation": "sfup"}},
+            producers={
+                "ee": [
+                    scalefactors.Ele_1_Trigger_SF,
+                    scalefactors.Ele_2_Trigger_SF,
+                ],
+                "em": [
+                    scalefactors.Ele_1_Trigger_SF,
+                ],
+            },
+        )
+    )
+
+    configuration.add_shift(
+        SystematicShift(
+            name="ElectronTriggerDown",
+            shift_config={"ee": {"ele_trigger_sf_varation": "sfdown"}},
+            producers={
+                "ee": [
+                    scalefactors.Ele_1_Trigger_SF,
+                    scalefactors.Ele_2_Trigger_SF,
+                ],
+                "em": [
+                    scalefactors.Ele_1_Trigger_SF,
+                ],
+            },
+        )
+    )
 
     #########################
     # Finalize and validate the configuration

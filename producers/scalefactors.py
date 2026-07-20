@@ -120,10 +120,26 @@ Ele_1_Trigger_SF = Producer(
 
 Ele_2_Trigger_SF = Producer(
     name="Ele_2_Trigger_SF",
-    call='scalefactor::electron::trigger({df}, {output}, {input}, "{nom_ele_trigger_sf_file}", "{nom_ele_trigger_sf_name}", "{syst_ele_trigger_sf_file}", "{syst_ele_trigger_sf_name}")',
+    call='physicsobject::electron::scalefactor::trigger({df}, {output}, {input}, "{nom_ele_trigger_sf_file}", "{nom_ele_trigger_sf_name}", "{syst_ele_trigger_sf_file}", "{syst_ele_trigger_sf_name}")',
     input=[q.pt_2, q.eta_2],
     output=[q.trigger_wgt_ele_2, q.trigger_wgt_ele_2_up, q.trigger_wgt_ele_2_down],
     scopes=["ee"], 
+)
+
+Ele_1_Trigger_SF_run3 = Producer(
+    name="Ele_1_Trigger_SF",
+    call='physicsobject::electron::scalefactor::Trigger({df}, correctionManager, {output}, {input}, "trg_single_el", "{ele_sf_year_id}", "{ele_trigger_sf_path}", "{ele_trigger_sf_file}", "{ele_trigger_sf_name}", "{ele_sf_varation}")',
+    input=[q.pt_1, q.eta_1],
+    output=[q.trigger_wgt_ele_1],
+    scopes=["ee", "em"],
+)
+
+Ele_2_Trigger_SF_run3 = Producer(
+    name="Ele_2_Trigger_SF",
+    call='physicsobject::electron::scalefactor::Trigger({df}, correctionManager, {output}, {input}, "trg_single_el", "{ele_sf_year_id}", "{ele_trigger_sf_path}", "{ele_trigger_sf_file}", "{ele_trigger_sf_name}", "{ele_sf_varation}")',
+    input=[q.pt_2, q.eta_2],
+    output=[q.trigger_wgt_ele_2],
+    scopes=["ee"],
 )
 
 MuonIDIsoTrigger_SF = ProducerGroup(
@@ -169,6 +185,56 @@ ElectronIDTrigger_SF = ProducerGroup(
     }
 )
 
+ElectronIDTrigger_SF_run3 = ProducerGroup(
+    name="ElectronIDTrigger_SF",
+    call=None,
+    input=None,
+    output=None,
+    scopes=["ee", "em"],
+    subproducers={
+        "ee": [
+            Ele_1_ID_SF,
+            Ele_2_ID_SF,
+            Ele_1_Trigger_SF_run3,
+            Ele_2_Trigger_SF_run3
+        ],
+        "em": [
+            Ele_1_ID_SF,
+            Ele_1_Trigger_SF_run3,
+        ]
+    }
+)
+
+LeptonSF_run3 = ProducerGroup(
+    name="LeptonSF_run3",
+    call=None,
+    input=None,
+    output=None,
+    scopes=["ee", "em", "mm"],
+    subproducers={
+        "ee": [
+            Ele_1_ID_SF,
+            Ele_2_ID_SF,
+            Ele_1_Trigger_SF_run3,
+            Ele_2_Trigger_SF_run3,
+        ],
+        "em": [
+            Ele_1_ID_SF,
+            Ele_1_Trigger_SF_run3,
+            Muon_2_ID_SF,
+            Muon_2_Iso_SF,
+            Muon_2_Trigger_SF,
+        ],
+        "mm": [
+            Muon_1_ID_SF,
+            Muon_1_Iso_SF,
+            Muon_1_Trigger_SF,
+            Muon_2_ID_SF,
+            Muon_2_Iso_SF,
+            Muon_2_Trigger_SF,
+        ],
+    },
+)
 
 MuonIDIso_SF_RooWorkspace = ProducerGroup(
     name="MuonIDIso_SF_RooWorkspace",
